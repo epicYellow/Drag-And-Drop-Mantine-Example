@@ -13,18 +13,16 @@ const data = [
 
 export function DndTable() {
   const [state, handlers] = useListState(data);
-  console.log(
-    "state",
-    state.map((s, i) => {
-      return { ...s, index: i };
-    })
-  );
-  console.log(
-    "data",
-    data.map((d, i) => {
-      return { ...d, index: i };
-    })
-  );
+
+  const updatePositionBasedonIndex = () => {
+    console.log(state);
+
+    const newData = state.map((s, i) => {
+      return { ...s, position: i };
+    });
+
+    handlers.setState(newData);
+  };
 
   const items = state.map((item, index) => (
     <Draggable key={item.symbol} index={index} draggableId={item.symbol}>
@@ -73,6 +71,7 @@ export function DndTable() {
           )}
         </Droppable>
       </table>
+      <button onClick={updatePositionBasedonIndex}>Click Me</button>
     </DragDropContext>
   );
 }
