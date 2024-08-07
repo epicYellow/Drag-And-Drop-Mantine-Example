@@ -1,7 +1,6 @@
 import { rem } from "@mantine/core";
 import { useListState } from "@mantine/hooks";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
-// import { IconGripVertical } from "@tabler/icons-react";
 import classes from "./DndList.module.css";
 
 const data = [
@@ -14,6 +13,18 @@ const data = [
 
 export function DndTable() {
   const [state, handlers] = useListState(data);
+  console.log(
+    "state",
+    state.map((s, i) => {
+      return { ...s, index: i };
+    })
+  );
+  console.log(
+    "data",
+    data.map((d, i) => {
+      return { ...d, index: i };
+    })
+  );
 
   const items = state.map((item, index) => (
     <Draggable key={item.symbol} index={index} draggableId={item.symbol}>
