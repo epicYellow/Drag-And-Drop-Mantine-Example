@@ -1,3 +1,4 @@
+import React, { useCallback } from "react";
 import { rem, Table } from "@mantine/core";
 import { useListState } from "@mantine/hooks";
 import {
@@ -6,8 +7,9 @@ import {
   Draggable,
   DraggableLocation,
 } from "@hello-pangea/dnd";
+
 import classes from "./DndList.module.css";
-import React, { useCallback } from "react";
+import { IconGripVertical } from "@tabler/icons-react";
 
 type DataItem = {
   position: number;
@@ -26,23 +28,23 @@ const data: DataItem[] = [
 ];
 
 export function DndTable() {
-  const [state1, handlers1] = useListState(
+  const [columnOne, handlerColumnOne] = useListState(
     data.filter((s) => s.category === "one")
   );
-  const [state2, handlers2] = useListState(
+  const [columnTwo, handlerColumnTwo] = useListState(
     data.filter((s) => s.category === "two")
   );
 
   const updatePositionBasedOnIndex = () => {
-    const newData1 = state1.map((s, i) => {
+    const newData1 = columnOne.map((s, i) => {
       return { ...s, position: i };
     });
-    const newData2 = state1.map((s, i) => {
+    const newData2 = columnTwo.map((s, i) => {
       return { ...s, position: i };
     });
 
-    handlers1.setState(newData1);
-    handlers2.setState(newData2);
+    handlerColumnOne.setState(newData1);
+    handlerColumnTwo.setState(newData2);
   };
 
   const onDragEnd = ({
@@ -54,8 +56,8 @@ export function DndTable() {
   }) => {
     if (!destination) return;
 
-    const updatedState1 = [...state1];
-    const updatedState2 = [...state2];
+    const updatedState1 = [...columnOne];
+    const updatedState2 = [...columnTwo];
 
     const [movedItem] =
       source.droppableId === "one"
@@ -63,22 +65,15 @@ export function DndTable() {
         : updatedState2.splice(source.index, 1);
 
     if (destination.droppableId === "one") {
-      updatedState1.splice(destination.index, 0, {
-        ...movedItem,
-        // position: updatedState1.length + 1,
-      });
-      console.log(updatedState1);
-
-      handlers1.setState(updatedState1);
-      handlers2.setState(updatedState2);
-    } else {
-      updatedState2.splice(destination.index, 0, {
-        ...movedItem,
-        position: updatedState2.length + 1,
-      });
-      handlers1.setState(updatedState1);
-      handlers2.setState(updatedState2);
+      updatedState1.splice(destination.index, 0, movedItem);
+      handlerColumnOne.setState(updatedState1);
+      handlerColumnTwo.setState(updatedState2);
+      return;
     }
+
+    updatedState2.splice(destination.index, 0, movedItem);
+    handlerColumnOne.setState(updatedState1);
+    handlerColumnTwo.setState(updatedState2);
   };
 
   const renderTableRows = useCallback((state: DataItem[]) => {
@@ -91,13 +86,17 @@ export function DndTable() {
             {...provided.draggableProps}
           >
             <td>
-              <div className={classes.dragHandle} {...provided.dragHandleProps}>
-                <div>lol</div>
+              <div
+                style={{ cursor: "grab" }}
+                className={classes.dragHandle}
+                {...provided.dragHandleProps}
+              >
+                <IconGripVertical />
               </div>
             </td>
-            <td style={{ width: rem(80) }}>{item.position}</td>
-            <td style={{ width: rem(120) }}>{item.name}</td>
-            <td style={{ width: rem(80) }}>{item.symbol}</td>
+            <td style={{ width: rem(80), height: rem(40) }}>{item.position}</td>
+            <td style={{ width: rem(120), height: rem(40) }}>{item.name}</td>
+            <td style={{ width: rem(80), height: rem(40) }}>{item.symbol}</td>
             <td>{item.mass}</td>
           </tr>
         )}
@@ -111,40 +110,71 @@ export function DndTable() {
         onDragEnd({ destination, source })
       }
     >
-      <div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "start",
+          gap: "4vh",
+          padding: "4vh",
+          border: "solid",
+          borderRadius: "25px",
+          borderWidth: "0.5px",
+          borderColor: "gray",
+        }}
+      >
         <Table>
           <thead>
-            <tr>
-              <th style={{ width: rem(40) }} />
-              <th style={{ width: rem(80) }}>Position</th>
-              <th style={{ width: rem(120) }}>Name</th>
-              <th style={{ width: rem(40) }}>Symbol</th>
+            <tr
+              style={{
+                borderBottom: "solid",
+                borderBottomWidth: "0.5px",
+                borderBottomColor: "lightgray",
+              }}
+            >
+              <th style={{ width: rem(40), height: rem(40) }} />
+              <th style={{ width: rem(80), height: rem(40) }}>Position</th>
+              <th style={{ width: rem(120), height: rem(40) }}>Name</th>
+              <th style={{ width: rem(40), height: rem(40) }}>Symbol</th>
               <th>Mass</th>
             </tr>
           </thead>
           <Droppable droppableId="one" direction="vertical">
             {(provided) => (
               <tbody {...provided.droppableProps} ref={provided.innerRef}>
-                {renderTableRows(state1)}
+                {renderTableRows(columnOne)}
                 {provided.placeholder}
               </tbody>
             )}
           </Droppable>
         </Table>
+        <div
+          style={{ height: "20vh", width: "1px", backgroundColor: "gray" }}
+        ></div>
         <Table>
           <thead>
-            <tr>
-              <th style={{ width: rem(40) }} />
-              <th style={{ width: rem(80) }}>Position</th>
-              <th style={{ width: rem(120) }}>Name</th>
-              <th style={{ width: rem(40) }}>Symbol</th>
+            <tr
+              style={{
+                borderBottom: "solid",
+                borderBottomWidth: "0.5px",
+                borderBottomColor: "lightgray",
+              }}
+            >
+              <th style={{ width: rem(40), height: rem(40) }} />
+              <th style={{ width: rem(80), height: rem(40) }}>Position</th>
+              <th style={{ width: rem(120), height: rem(40) }}>Name</th>
+              <th style={{ width: rem(40), height: rem(40) }}>Symbol</th>
               <th>Mass</th>
             </tr>
           </thead>
           <Droppable droppableId="two" direction="vertical">
             {(provided) => (
-              <tbody {...provided.droppableProps} ref={provided.innerRef}>
-                {renderTableRows(state2)}
+              <tbody
+                // style={{ height: "40vh" }}
+                {...provided.droppableProps}
+                ref={provided.innerRef}
+              >
+                {renderTableRows(columnTwo)}
                 {provided.placeholder}
               </tbody>
             )}
@@ -152,7 +182,10 @@ export function DndTable() {
         </Table>
       </div>
 
-      <button onClick={updatePositionBasedOnIndex}>Click Me</button>
+      <br />
+      <button onClick={updatePositionBasedOnIndex}>
+        Click Me To Update Indexes/Positions
+      </button>
     </DragDropContext>
   );
 }
