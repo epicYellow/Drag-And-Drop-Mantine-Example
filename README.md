@@ -36,7 +36,7 @@ To get started with this project, follow these steps:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/drag-and-drop-example.git
+   git clone https://github.com/epicYellow/Drag-And-Drop-Mantine-Example
    cd drag-and-drop-example
    ```
 
